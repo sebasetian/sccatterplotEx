@@ -2,6 +2,19 @@ var width = 500;
 var height = 500;
 var padding = 25;
 
+function mustHave(obj){
+    var keys = ['subscribersPer100',
+    'medianAge', 'adultLiteracyRate',
+    'urbanPopulationRate'
+        ];
+    for(key of keys){
+        if(obj[key] == null){
+            return false;
+        }
+    }
+    return true;
+}
+
 var yScale = d3.scaleLinear()
                 .domain(d3.extent(regionData,d => d.medianAge))
                 .range([height - padding,padding]);
@@ -37,13 +50,14 @@ d3.select('svg')
     .attr('width',width)
     .attr('height', height)
  .selectAll('circle')
-    .data(regionData)
+    .data(regionData.filter(d => mustHave(d)))
     .enter()
   .append('circle')
     .attr('cx', d => xScale(d.subscribersPer100))
     .attr('cy', d => yScale(d.medianAge))
     .attr('fill', d => colorScale(d.adultLiteracyRate))
-    .attr('r', d => circleScale(d.urbanPopulationRate));
+    .attr('r', d => circleScale(d.urbanPopulationRate))
+    .style('stroke','#fff');
 
 d3.select('svg')
     .append('text')
